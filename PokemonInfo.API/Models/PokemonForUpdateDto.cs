@@ -15,43 +15,48 @@ namespace PokemonInfo.API.Models
         /// Pokemon description
         /// </summary>
         [MaxLength(250)]
+        [Required]
         public string? Description { get; set; }
 
         /// <summary>
         /// the first type of the pokemon
         /// </summary>
+        [Required]
         public string PrimaryType { get; set; } = string.Empty;
 
         /// <summary>
         /// The second type of the pokemon
         /// </summary>
+        [Required]
         public string SecondaryType { get; set; } = string.Empty;
 
         /// <summary>
         /// the hp points
         /// </summary>
+        [Required]
         public int Hp { get; set; } = 0;
         /// <summary>
         /// the attack points
         /// </summary>
-        public int Attack { get; set; } = 0;
+
+        [Required] public int Attack { get; set; } = 0;
         /// <summary>
         /// The defense points
         /// </summary>
-        public int Defense { get; set; } = 0;
+        [Required] public int Defense { get; set; } = 0;
         /// <summary>
         /// the special attack points
         /// </summary>
-        public int SpAtk { get; set; } = 0;
+        [Required] public int SpAtk { get; set; } = 0;
 
         /// <summary>
         /// the special defense points
         /// </summary>
-        public int SpDef { get; set; } = 0;
+        [Required] public int SpDef { get; set; } = 0;
 
         /// <summary>
         /// the speed points
         /// </summary>
-        public int Speed { get; set; } = 0;
+        [Required] public int Speed { get; set; } = 0;
     }
 }

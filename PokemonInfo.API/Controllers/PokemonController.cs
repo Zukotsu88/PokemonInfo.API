@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using PokemonInfo.API.Entities;
 using PokemonInfo.API.Models;
@@ -91,8 +92,99 @@ namespace PokemonInfo.API.Controllers
         }
 
 
+        /// <summary>
+        /// Completely updates the given pokemon
+        /// </summary>
+        /// <param name="pokemonId">The id of the pokemon</param>
+        /// <param name="pokemon">the new pokemon</param>
+        /// <returns>An ActionResult</returns>
+        [HttpPut("{pokemonId}")]
+        public async Task<ActionResult> UpdatePokemon(int pokemonId, [FromBody] PokemonForUpdateDto pokemon)
+        {
+            if(!await _pokemonRepository.PokemonExistsAsync(pokemonId))
+            {
+                return NotFound();
+            }
 
+            var pokemonEntity = _pokemonRepository.GetPokemonAsync(pokemonId);
 
+            if(pokemonEntity == null)
+            {
+                return NotFound();
+            }
+
+            await _mapper.Map(pokemon, pokemonEntity);
+            await _pokemonRepository.SaveChangesAsync();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Partially updates the given pokemon
+        /// </summary>
+        /// <param name="pokemonId">The Id of the given pokemon</param>
+        /// <returns>An ActionResult</returns>
+        [HttpPatch("pokemonId")]
+        public async Task<ActionResult> PartiallyUpdatePokemon(int pokemonId, JsonPatchDocument<PokemonForUpdateDto> patchDoc)
+        {
+            if(!await _pokemonRepository.PokemonExistsAsync(pokemonId))
+            {
+                return NotFound();
+            }
+
+            var pokemonEntity = await _pokemonRepository.GetPokemonAsync(pokemonId);
+
+            if(pokemonEntity == null)
+            {
+                return NotFound();
+            }
+
+            var pokeToPatch = _mapper.Map<PokemonForUpdateDto>(pokemonEntity);
+
+            patchDoc.ApplyTo(pokeToPatch, ModelState);
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if(!TryValidateModel(pokeToPatch))
+            {
+                return BadRequest(ModelState);
+            }
+
+            // after validations, apply patches to pokemon entity
+            _mapper.Map(pokeToPatch, pokemonEntity);
+
+            // save changes
+            await _pokemonRepository.SaveChangesAsync();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Deletes the given pokemon
+        /// </summary>
+        /// <param name="pokemonId">The ID of the given pokemon</param>
+        /// <returns>An ActionResult</returns>
+        [HttpDelete("{pokemonId}")]
+        public async Task<ActionResult> DeletePokemon(int pokemonId)
+        {
+            if(!await _pokemonRepository.PokemonExistsAsync(pokemonId))
+            {
+                return NotFound();
+            }
+
+            var pokemonEntity = await _pokemonRepository.GetPokemonAsync(pokemonId);
+
+            if(pokemonEntity == null)
+            {
+                return NotFound();
+            }
+
+            _pokemonRepository.DeletePokemon(pokemonEntity);
+            await _pokemonRepository.SaveChangesAsync();
+
+            return NoContent();
+        }
 
     }
 }
