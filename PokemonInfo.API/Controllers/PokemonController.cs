@@ -74,21 +74,9 @@ namespace PokemonInfo.API.Controllers
 
             // map the entity back to a normal dto
             var pokeDto = _mapper.Map<PokemonDto>(pokeEntity);
+            var routeVals = new { pokemonId = pokeDto.Id };
 
-            return CreatedAtRoute("GetPokemon",
-                new
-                {
-                    Id = pokeDto.Id,
-                    Description = pokeDto.Description,
-                    PrimaryType = pokeDto.PrimaryType,
-                    SecondaryType = pokeDto.SecondaryType,
-                    Hp = pokeDto.Hp,
-                    Attack = pokeDto.Attack,
-                    Defense = pokeDto.Defense,
-                    SpAtk = pokeDto.SpAtk,
-                    SpDef = pokeDto.SpDef,
-                    Speed = pokeDto.Speed
-                }, pokeDto);
+            return CreatedAtRoute("GetPokemon", routeVals, pokeDto);
         }
 
 
@@ -106,14 +94,14 @@ namespace PokemonInfo.API.Controllers
                 return NotFound();
             }
 
-            var pokemonEntity = _pokemonRepository.GetPokemonAsync(pokemonId);
+            var pokemonEntity = await _pokemonRepository.GetPokemonAsync(pokemonId);
 
             if(pokemonEntity == null)
             {
                 return NotFound();
             }
 
-            await _mapper.Map(pokemon, pokemonEntity);
+            _mapper.Map(pokemon, pokemonEntity);
             await _pokemonRepository.SaveChangesAsync();
             return NoContent();
         }

@@ -38,7 +38,6 @@ namespace PokemonInfo.API.Models
         /// <summary>
         /// the attack points
         /// </summary>
-
         [Required] public int Attack { get; set; } = 0;
         /// <summary>
         /// The defense points

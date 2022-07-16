@@ -2,6 +2,9 @@
 
 namespace PokemonInfo.API.Models
 {
+    /// <summary>
+    /// The DTO for the creation of a pokemon model
+    /// </summary>
     public class PokemonForCreationDto
     {
         /// <summary>
@@ -15,6 +18,7 @@ namespace PokemonInfo.API.Models
         /// Pokemon description
         /// </summary>
         [MaxLength(250)]
+        [Required]
         public string? Description { get; set; }
 
         /// <summary>
